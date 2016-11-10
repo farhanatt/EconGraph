@@ -1,0 +1,4 @@
+.DS_Store
+critique.md
+__pycache__/*
+.ipynb_checkpoints/*
