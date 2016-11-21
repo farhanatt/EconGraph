@@ -8,9 +8,12 @@ It's essential to download from anaconda so you're able to use Python 3 notebook
 Run `jupyter notebook` in your terminal, which will launch the notebook in your
 browser.  You'll be taken to a UI that lists your local files.
 
+Install matplotlib: http://matplotlib.org/users/installing.html#mac-osx-using-pip
+
 Click the "New" dropdown menu on the top right of the notebook UI, and select
 "Python (default)".  Save the file `EconGraph.py` in the same directory as your
 notebook.  
+
 
 In the first cell of your notebook, copy and paste the following code:
 ```
