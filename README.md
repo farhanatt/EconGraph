@@ -1,9 +1,9 @@
 #EconGraph
 
 ## How to use the DSL
-Install jupyter notebook from this link: https://jupyter.readthedocs.io/en/latest/install.html#installing-jupyter-using-anaconda-and-conda
+Make sure you've downloaded python3
 
-It's essential to download from anaconda so you're able to use Python 3 notebooks.
+Install jupyter notebook following instructions from this link: https://jupyter.readthedocs.io/en/latest/install.html#installing-jupyter-using-anaconda-and-conda
 
 Run `jupyter notebook` in your terminal, which will launch the notebook in your
 browser.  You'll be taken to a UI that lists your local files.
