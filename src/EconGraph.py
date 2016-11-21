@@ -60,6 +60,12 @@ class SupplyCurve():
 			plt.axis([-1, 6, -1, 6])			
 			plt.text(3.1, 5, r'S"')
 
+	def slope(self, direction):
+		if direction == "up": 
+			plt.plot(np.array([1, 1.5, 2, 2.5]), np.array([1, 2, 3, 4, 4.5]))
+			plt.axis([0, 5, 0, 5])
+
+
 
 # def SupplyCurve(): 
 # 	plt.plot(np.array([1,2,3,4]), np.array([1, 2, 3, 4]), linewidth=2)
