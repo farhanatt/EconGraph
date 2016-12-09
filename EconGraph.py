@@ -16,10 +16,10 @@ import matplotlib.markers as markers
 class DemandCurve(object): 
 
 	def __init__(self):
-		self.xcoordinates = [4, 1]
-		self.ycoordinates = [1, 4]
-		self.axes = [-1, 6, -1, 6]
-		self.text = [4.1, 1, r'D']
+		self.xcoordinates = [2, 5]
+		self.ycoordinates = [2, 5]
+		self.axes = [0, 7, 0, 7]
+		self.text = [5.1, 5, r'D']
 
 	def increase(self):				
 		DemandCurve().show()
@@ -73,10 +73,10 @@ class DemandCurve(object):
 class SupplyCurve(): 
 	
 	def __init__(self):
-		self.xcoordinates = [1,4]
-		self.ycoordinates = [1,4]
-		self.axes = [-1, 6, -1, 6]
-		self.text = [4.1, 4, r'S']
+		self.xcoordinates = [2, 5]
+		self.ycoordinates = [2, 5]
+		self.axes = [0, 7, 0, 7]
+		self.text = [5.1, 5, r'S']
 
 
 	def increase(self):				
