@@ -32,7 +32,6 @@ class Graph(object):
 		for a in args:
 			self.curves.append(a)
 
-		# self.createCurves()
 		self.show()
 
 	def getAxes(self):
@@ -42,21 +41,13 @@ class Graph(object):
 		plt.plot()
 		plt.axis(self.axes)
 		for c in self.curves:
-			l = str(c).split(".", 1)
-			print(l)
-			# c.show()
-
-	def createDemandCurve(axes): 
-		DemandCurve(axes)
-
-	def DemandCurve(): 
-		createDemandCurve(self.axes)
+			c.show()
 
 
 # DemandCurve TODO: Change in quantity demanded
 class DemandCurve(object): 
 
-	def __init__(self, axes):	
+	def __init__(self):	
 		# Axes scale
 		self.xstart = 0
 		self.xend = 10
@@ -73,13 +64,14 @@ class DemandCurve(object):
 		self.shift = "none"
 		self.slope_direction = "none"
 		self.numLabels = 0
-		self.labels = list([])		
+		self.labels = list([])
+		self.str = "DemandCurve()"		
 
 	def increase(self):				
 		self.xcoordinates =  list(map(lambda x: x+1, self.xcoordinates))
 		self.ycoordinates =  list(map(lambda y: y+1, self.ycoordinates))
 		self.shift = "increase"
-		self.addToStr("shift", direction="increase")
+		# self.addToStr("shift", direction="increase")
 		self.text[2] = r'D"'
 		return self
 
@@ -174,10 +166,10 @@ class DemandCurve(object):
 			# for i in range (0, self.numLabels): 
 			# 	tpl = str(self.labels[self.numLabels - 1])
 			self.str += ".label_line" + str(coords)
-		print(self.str)
+		# print(self.str)
 
-	def __str__(self):
-		return self.str
+	# def __str__(self):
+	# 	return self.str
 
 # Supply Curve
 class SupplyCurve():
