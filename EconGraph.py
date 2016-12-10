@@ -390,14 +390,13 @@ class PPC():
 		self.patches.append(arr)	
 		return self
 
-	def show(self): 
+	def translate(self, axes): 
 		ax = plt.axes(aspect=1)
 		for patch in self.patches:
 			ax.add_patch(patch)
 		ax.set_title("Production Possibilities Frontier")	
 		ax.set_xlabel("Capital Goods")
 		ax.set_ylabel("Consumer Goods")
-		plt.show()
 		
 class Schedule(): 
 	def __init__(self, coordinates_list): 
