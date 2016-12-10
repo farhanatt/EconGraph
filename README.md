@@ -34,4 +34,58 @@ g.plot(
 
 You should see a graph showing an increase in demand (two demand curves).   
 
-## API 
+# API
+
+## Graph
+Each graph is created by the `Graph()` object.  When creating a new graph, always create
+a `Graph()`.  Here's how to create a Graph() that we're calling g: 
+
+```
+g = Graph()
+```
+
+`Graph()` allows you to customize your graph.  Specifically, it wil allow you to
+customize the title, axes scales, axes labels, and mark and annotate points.
+Most importantly, `Graph()` allows you to add curves to your graph. 
+
+Here is a list of methods you can use with Graph():
+
+### setTitle
+### setAxes
+### xLabel
+### yLabel
+### setLabels
+### annotate_point
+### mark_point
+### plot
+
+
+## DemandCurve
+
+### decrease
+### increase
+### slope_up
+### slope_down
+### slope_vertical
+### slope_horizontal
+### trace_point
+
+
+## SupplyCurve
+
+### decrease
+### increase
+### slope_up
+### slope_down
+### slope_vertical
+### slope_horizontal
+### trace_point
+
+
+## Schedule
+
+
+## PPC 
+
+### increase
+### decrease

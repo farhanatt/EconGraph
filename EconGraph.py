@@ -25,7 +25,13 @@ class Graph(object):
 		self.ystart = ystart
 		self.yend = yend
 		self.axes = [xstart, xend, ystart, yend]
-	
+
+	def xLabel(self, label):
+		self.xlabel = label
+		
+	def yLabel(self, label):
+		self.ylabel = label
+
 	def setTitle(self, title):
 		self.title = title
 
@@ -371,10 +377,6 @@ class PPC():
 	def __init__(self): 
 		cir1 = patches.Circle((0,0), radius=0.5, fc='none')
 		self.patches = [cir1]
-
-	def unattainable_point(self):
-		plt.plot(0.2, 0.1, 'o')
-		return self
 
 	def increase(self):
 		cir2 = patches.Circle((0,0), radius=0.75, fc='none')
