@@ -14,6 +14,8 @@ class Graph(object):
 		self.xend = 10
 		self.ystart = 0
 		self.yend = 10
+		self.ylabel = "Price"
+		self.xlabel = "Quantity"
 		self.curves = []
 
 	def setAxes(self, xstart, xend, ystart, yend):
@@ -22,6 +24,17 @@ class Graph(object):
 		self.ystart = ystart
 		self.yend = yend
 		self.axes = [xstart, xend, ystart, yend]
+
+	def setLabels(self, type):
+		if type.__str__() == "Macro":
+			self.ylabel = "Price Level"
+			self.ylabel = "Output"
+		if type.__str__() == "MoneyMarket":
+			self.ylabel = "Nominal Interest Rate"
+			self.xlabel = "Quantity of Money"
+		if type.__str__() == "LoanableFunds":
+			self.ylabel = "Real Interest Rate"
+			self.xlabel = "Quantity of Loanable Funds"
 
 	def plot(self, *args):
 		for a in args:
@@ -33,7 +46,8 @@ class Graph(object):
 		plt.axis(self.axes)
 		for c in self.curves:
 			c.translate(self.axes)
-
+		plt.ylabel(self.ylabel)
+		plt.xlabel(self.xlabel)
 
 # DemandCurve TODO: Change in quantity demanded
 class DemandCurve(object): 
@@ -46,8 +60,6 @@ class DemandCurve(object):
 		self.yend = 10
 		self.axes = [0, 10, 0, 10]
 		self.scale = 2
-		self.xlabel = "Quantity"
-		self.ylabel = "Price"
 
 		# Coordinates for curve
 		self.xcoordinates = [self.xend - 2, self.xstart + 2]
@@ -191,8 +203,6 @@ class DemandCurve(object):
 			plt.text((max(self.xcoordinates)) - shift_scale, (min(self.ycoordinates)) - shift_scale - (shift_scale * 0.2), r'D"')
 		if self.shift == "increase":
 			plt.text((max(self.xcoordinates)) + shift_scale, (min(self.ycoordinates)) + shift_scale + (shift_scale * 0.2), r'D"')
-		plt.ylabel(self.ylabel)
-		plt.xlabel(self.xlabel)
 
 # Supply Curve
 class SupplyCurve():
@@ -205,8 +215,6 @@ class SupplyCurve():
 		self.yend = 10
 		self.axes = [0, 10, 0, 10]
 		self.scale = 2
-		self.xlabel = "Quantity"
-		self.ylabel = "Price"
 
 		# Coordinates for curve
 		self.xcoordinates = [self.xend - 2, self.xstart + 2]
@@ -339,8 +347,6 @@ class SupplyCurve():
 			plt.text((max(self.xcoordinates)) - shift_scale, (max(self.ycoordinates)) + shift_scale + (shift_scale * 0.2), r'S"')
 		if self.shift == "increase":
 			plt.text((max(self.xcoordinates)) + shift_scale, (max(self.ycoordinates)) - shift_scale + (shift_scale * 0.2), r'S"')
-		plt.ylabel(self.ylabel)
-		plt.xlabel(self.xlabel)
 
 #https://www.youtube.com/watch?v=2izx5W1FAEU&list=PLA46DB4506062B62B&index=1
 #PPC TODO: 
@@ -399,3 +405,16 @@ class Schedule():
 			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), marker='o', linewidth=2)
 		else:
 			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), linewidth=2)
+
+
+class MoneyMarket():
+	def __str__():
+		return "MoneyMarket"
+
+class LoanableFunds():
+	def __str__():
+		return "LoanableFunds"
+
+class Macro():
+	def __str__():
+		return "Macro"
