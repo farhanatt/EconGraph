@@ -188,9 +188,9 @@ class DemandCurve(object):
 				plt.plot(np.array(list(map(lambda x: x+shift_scale, self.xcoordinates))), np.array(list(map(lambda y: y+shift_scale, self.ycoordinates))), linewidth=2)		
 		plt.text((max(self.xcoordinates)) + 0.2, (min(self.ycoordinates)) + 0.2, self.text[2])
 		if self.shift == "decrease":
-			plt.text((max(self.xcoordinates)) - shift_scale + (shift_scale * 0.2), (min(self.ycoordinates)) - shift_scale - (shift_scale * 0.2), r'D"')
+			plt.text((max(self.xcoordinates)) - shift_scale, (min(self.ycoordinates)) - shift_scale - (shift_scale * 0.2), r'D"')
 		if self.shift == "increase":
-			plt.text((max(self.xcoordinates)) + shift_scale + (shift_scale * 0.2), (min(self.ycoordinates)) + shift_scale + (shift_scale * 0.2), r'D"')
+			plt.text((max(self.xcoordinates)) + shift_scale, (min(self.ycoordinates)) + shift_scale + (shift_scale * 0.2), r'D"')
 		plt.ylabel(self.ylabel)
 		plt.xlabel(self.xlabel)
 
@@ -205,8 +205,8 @@ class SupplyCurve():
 		self.yend = 10
 		self.axes = [0, 10, 0, 10]
 		self.scale = 2
-		self.xscale = "Quantity"
-		self.yscale = "Price"
+		self.xlabel = "Quantity"
+		self.ylabel = "Price"
 
 		# Coordinates for curve
 		self.xcoordinates = [self.xend - 2, self.xstart + 2]
@@ -241,33 +241,12 @@ class SupplyCurve():
 
 		# Set coordinates relative to axes
 		self.coords_scale = (self.xend - self.xstart) * 0.2
-		self.xcoordinates = [self.xend - self.coords_scale, self.xstart + self.coords_scale]
-		self.ycoordinates = [self.ystart - self.coords_scale, self.yend + self.coords_scale]
+		self.xcoordinates = [self.xstart + self.coords_scale, self.xend - self.coords_scale]
+		self.ycoordinates = [self.ystart + self.coords_scale, self.yend - self.coords_scale]
 
 		# Set slope scale 
 		self.slope_scale = (self.yend-self.ystart) * .10
 		self.transform()
-		return self
-
-	# def schedule(self, coordinates_list): 
-	# 	coordinates_dict = collections.OrderedDict(list(coordinates_list))
-	# 	x_coords = list(coordinates_dict.keys())
-	# 	y_coords = list(coordinates_dict.values())
-	# 	self.xcoordinates = x_coords
-	# 	self.ycoordinates = y_coords
-	# 	self.axes = [0, (max(self.xcoordinates)) + 2, 0, (max(self.ycoordinates)) + 2]
-	# 	self.markers = True
-	# 	return self
-
-	def increase(self): 
-		self.transformations.append(self._increase)
-		return self 
-
-	def _increase(self):				
-		self.shift = "increase"
-		self.xcoordinates =  list(map(lambda x: x+1, self.xcoordinates))
-		self.ycoordinates =  list(map(lambda y: y-1, self.ycoordinates))
-		self.text[2] = r'S"'
 		return self
 
 	def decrease(self): 
@@ -276,9 +255,16 @@ class SupplyCurve():
 
 	def _decrease(self):
 		self.shift = "decrease"
-		self.xcoordinates =  list(map(lambda x: x-1, self.xcoordinates))
-		self.ycoordinates =  list(map(lambda y: y+1, self.ycoordinates))
-		self.text[2] = r'S"'
+		self.text[2] = r'S'
+		return self
+
+	def increase(self): 
+		self.transformations.append(self._increase)
+		return self 
+
+	def _increase(self):
+		self.shift = "increase"
+		self.text[2] = r'S'
 		return self
 	
 	def slope_up(self):
@@ -286,8 +272,8 @@ class SupplyCurve():
 		return self
 	
 	def _slope_up(self):
-		self.ycoordinates[0] = self.ycoordinates[0] - 1
-		self.ycoordinates[1] = self.ycoordinates[1] + 1
+		self.ycoordinates[0] = self.ycoordinates[0] - self.slope_scale
+		self.ycoordinates[1] = self.ycoordinates[1] + self.slope_scale
 		return self
 
 	def slope_down(self):
@@ -295,8 +281,8 @@ class SupplyCurve():
 		return self
 
 	def _slope_down(self):
-		self.ycoordinates[0] = self.xcoordinates[0] + 1
-		self.ycoordinates[1] = self.xcoordinates[1] - 1
+		self.ycoordinates[0] = self.xcoordinates[0] + self.slope_scale
+		self.ycoordinates[1] = self.xcoordinates[1] - self.slope_scale
 		return self
 
 	def slope_horizontal(self):
@@ -304,10 +290,10 @@ class SupplyCurve():
 		return self
 
 	def _slope_horizontal(self): 
-		self.ycoordinates[0] = 3
-		self.ycoordinates[1] = 3
-		self.xcoordinates[0] = self.xcoordinates[0] - 1
-		self.xcoordinates[1] = self.xcoordinates[1] + 1
+		self.ycoordinates[0] = (max(self.axes[2], self.axes[3]) + min(self.axes[2], self.axes[3]))/2
+		self.ycoordinates[1] = (max(self.axes[2], self.axes[3]) + min(self.axes[2], self.axes[3]))/2
+		self.xcoordinates[0] = self.xcoordinates[0] - self.slope_scale
+		self.xcoordinates[1] = self.xcoordinates[1] + self.slope_scale
 		return self
 
 	def slope_vertical(self):
@@ -315,10 +301,10 @@ class SupplyCurve():
 		return self
 
 	def _slope_vertical(self):
-		self.xcoordinates[0] = 3
-		self.xcoordinates[1] = 3
+		self.xcoordinates[0] = (max(self.axes[0], self.axes[1]) + min(self.axes[0], self.axes[1]))/2
+		self.xcoordinates[1] = (max(self.axes[0], self.axes[1]) + min(self.axes[0], self.axes[1]))/2
 		self.ycoordinates[0] = 0
-		self.ycoordinates[1] = self.ycoordinates[1] + 1
+		self.ycoordinates[1] = self.ycoordinates[1] + self.slope_scale
 		return self
 	
 	def label_line(self, x, y): 
@@ -335,6 +321,7 @@ class SupplyCurve():
 
 	def show(self): 
 		plt.axis(self.axes)
+		shift_scale = (self.axes[3] + self.axes[2]) * 0.1				
 		if self.markers:
 			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), marker='o', linestyle='-', linewidth=2)	
 			if self.shift == "increase":
@@ -343,17 +330,17 @@ class SupplyCurve():
 				plt.plot(np.array(list(map(lambda x: x+1, self.xcoordinates))), np.array(list(map(lambda y: y-1, self.ycoordinates))), marker='o', linestyle='-', linewidth=2)				
 		else:
 			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), linewidth=2) 
-			if self.shift == "increase":
-				plt.plot(np.array(list(map(lambda x: x-1, self.xcoordinates))), np.array(list(map(lambda y: y+1, self.ycoordinates))), linewidth=2)	
 			if self.shift == "decrease":
-				plt.plot(np.array(list(map(lambda x: x+1, self.xcoordinates))), np.array(list(map(lambda y: y-1, self.ycoordinates))), linewidth=2)	
+				plt.plot(np.array(list(map(lambda x: x-shift_scale, self.xcoordinates))), np.array(list(map(lambda y: y+shift_scale, self.ycoordinates))), linewidth=2)	
+			if self.shift == "increase":
+				plt.plot(np.array(list(map(lambda x: x+shift_scale, self.xcoordinates))), np.array(list(map(lambda y: y-shift_scale, self.ycoordinates))), linewidth=2)	
 		plt.text((max(self.xcoordinates)) + .1, (max(self.ycoordinates)) + .1, self.text[2])
-		if self.shift == "increase":
-			plt.text((max(self.xcoordinates)) - 0.9, (max(self.ycoordinates)) + 0.9, r'S')
 		if self.shift == "decrease":
-			plt.text((max(self.xcoordinates)) + 0.9, (max(self.ycoordinates)) - 0.9, r'S')
-		plt.ylabel('Price')
-		plt.xlabel('Quantity')
+			plt.text((max(self.xcoordinates)) - shift_scale, (max(self.ycoordinates)) + shift_scale + (shift_scale * 0.2), r'S"')
+		if self.shift == "increase":
+			plt.text((max(self.xcoordinates)) + shift_scale, (max(self.ycoordinates)) - shift_scale + (shift_scale * 0.2), r'S"')
+		plt.ylabel(self.ylabel)
+		plt.xlabel(self.xlabel)
 
 #https://www.youtube.com/watch?v=2izx5W1FAEU&list=PLA46DB4506062B62B&index=1
 #PPC TODO: 
