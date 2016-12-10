@@ -50,13 +50,19 @@ class Graph(object):
 			self.title = "Loanable Funds Market"
 
 	def annotate_point(self, message, point_coords, text_coords):
-		plt.plot(point_coords[0], point_coords[1], marker='o')
-		plt.annotate(message, xy=point_coords, xytext=text_coords, 
+		try:
+			plt.plot(point_coords[0], point_coords[1], marker='o')
+			plt.annotate(message, xy=point_coords, xytext=text_coords, 
 			arrowprops=dict(facecolor='black', shrink=0.05, width=0, headwidth=5))
+		except ValueError:
+			print("ERROR: Wrong type of input! Please check your input types.")
 		return self
 
 	def mark_point(self, x, y): 
-		plt.plot(x, y, marker='o')
+		try:
+			plt.plot(x, y, marker='o')
+		except ValueError:
+			print("ERROR: Wrong type of input! Please check your input types.")
 		return self
 
 	def plot(self, *args):
@@ -145,11 +151,14 @@ class DemandCurve(object):
 		return self
 
 	def trace_point(self, x, y):
-		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.text(x+.1, 0, r'Qd')
-		self.numMarks += 1
-		self.pointsToMark.append((x, y))
+		try:
+			plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.text(x+.1, 0, r'Qd')
+			self.numMarks += 1
+			self.pointsToMark.append((x, y))
+		except ValueError:
+			print("ERROR: Wrong type of input! Please check your input types.")
 		return self
 
 	def slope_up(self):
@@ -339,11 +348,14 @@ class SupplyCurve():
 		return self
 
 	def trace_point(self, x, y): 
-		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.text(x+.1, 0, r'Qs')
-		self.numMarks += 1
-		self.pointsToMark.append((x, y))
+		try:
+			plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.text(x+.1, 0, r'Qs')
+			self.numMarks += 1
+			self.pointsToMark.append((x, y))
+		except ValueError:
+			print("ERROR: Wrong type of input! Please check your input types.")
 		return self
 	
 	def transform(self):
