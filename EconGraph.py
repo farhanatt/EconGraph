@@ -4,143 +4,377 @@ import matplotlib.pyplot as plt
 from matplotlib.path import Path
 import matplotlib.patches as patches
 import matplotlib.markers as markers
+import collections
+  
+class Graph(object):
 
+	def __init__(self):
+		self.axes = [0, 10, 0, 10]
+		self.xstart = 0
+		self.xend = 10
+		self.ystart = 0
+		self.yend = 10
+		self.ylabel = "Price"
+		self.xlabel = "Quantity"
+		self.title = ""
+		self.curves = []
 
-# TODO: Check if there is some way in matplotlib to store all the curves in a figure/graph
-# first.  Currently, when we instantiate a curve object, it will instantly plot, which we
-# may not necessarily want in all cases.  We may want to have default coordinates, but 
-# not want it plotted first so we can adjust the slope before it appears.  However, we 
-# also need to show the curve if there are no transformations.  Could be done with a 
-# "show()" method, but would rather not have it if possible
+	def setAxes(self, xstart, xend, ystart, yend):
+		self.xstart = xstart
+		self.xend = xend
+		self.ystart = ystart
+		self.yend = yend
+		self.axes = [xstart, xend, ystart, yend]
+	
+	def setTitle(self, title):
+		self.title = title
+
+	def setLabels(self, type):
+		if type.__str__() == "Macro":
+			self.ylabel = "Price Level"
+			self.ylabel = "Output"
+			self.ylabel = "Aggregate Supply and Demand"
+		if type.__str__() == "MoneyMarket":
+			self.ylabel = "Nominal Interest Rate"
+			self.xlabel = "Quantity of Money"
+			self.title = "Money Market"
+		if type.__str__() == "LoanableFunds":
+			self.ylabel = "Real Interest Rate"
+			self.xlabel = "Quantity of Loanable Funds"
+			self.title = "Loanable Funds Market"
+
+	def annotate_point(self, message, point_coords, text_coords):
+		plt.plot(point_coords[0], point_coords[1], marker='o')
+		plt.annotate(message, xy=point_coords, xytext=text_coords, 
+			arrowprops=dict(facecolor='black', shrink=0.05, width=0, headwidth=5))
+		return self
+
+	def mark_point(self, x, y): 
+		plt.plot(x, y, marker='o')
+		return self
+
+	def plot(self, *args):
+		for a in args:
+			self.curves.append(a)
+		self.show()
+
+	def show(self):
+		plt.plot()
+		plt.axis(self.axes)
+		for c in self.curves:
+			c.translate(self.axes)
+		plt.ylabel(self.ylabel)
+		plt.xlabel(self.xlabel)
+		plt.title(self.title)
 
 class DemandCurve(object): 
 
-	def __init__(self):
-		self.xcoordinates = [2, 5]
-		self.ycoordinates = [2, 5]
-		self.axes = [0, 7, 0, 7]
-		self.text = [5.1, 5, r'D']
+	def __init__(self):	
+		# Default axes scale
+		self.xstart = 0
+		self.xend = 10
+		self.ystart = 0 
+		self.yend = 10
+		self.axes = [0, 10, 0, 10]
+		self.scale = 2
 
-	def increase(self):				
-		DemandCurve().show()
-		self.xcoordinates =  list(map(lambda x: x+1, self.xcoordinates))
-		self.ycoordinates =  list(map(lambda y: y+1, self.ycoordinates))
-		self.text[2] = r'D"'
+		# Coordinates for curve
+		self.xcoordinates = [self.xend - 2, self.xstart + 2]
+		self.ycoordinates = [self.ystart + 2, self.yend - 2]
+
+		# Text for curve
+		self.text = [5.1, 2, r'D']
+		# Attributes for transformations
+		self.markers = False
+
+		#Attribute for shift
+		self.shift = "none"
+
+		# Attributes for slope
+		self.slope_direction = "none"
+		self.slope_scale = 0
+
+		# Attributes for marking points
+		self.numMarks = 0
+		self.pointsToMark = list([])
+
+		# Attribute holding list of transformations
+		self.transformations = []		
+
+	# Adjust coordinates based on graph axes
+	def translate(self, axes): 
+		# Set axes
+		self.xstart = axes[0]
+		self.xend = axes[1]
+		self.ystart = axes[2]
+		self.yend = axes[3]
+		self.axes = axes
+
+		# Set coordinates relative to axes
+		self.coords_scale = (self.xend - self.xstart) * 0.2
+		self.xcoordinates = [self.xend - self.coords_scale, self.xstart + self.coords_scale]
+		self.ycoordinates = [self.ystart + self.coords_scale, self.yend - self.coords_scale]
+
+		# Set slope scale 
+		self.slope_scale = (self.yend-self.ystart) * .10
+		self.transform()
 		return self
 
 	def decrease(self):
-		DemandCurve().show()
-		self.xcoordinates =  list(map(lambda x: x-1, self.xcoordinates))
-		self.ycoordinates =  list(map(lambda y: y-1, self.ycoordinates))
-		self.text[2] = r'D"'
-		return self
-	
-	def label_line(self, x, y): 
-		plt.plot(np.array([-1,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.plot(np.array([x, x]), np.array([-1,y]), linewidth=1, linestyle='dashed', color='red')
+		self.transformations.append(self._decrease)
 		return self
 
-	def slope(self, direction):
-		if direction == "up":
-			self.ycoordinates[0] = self.ycoordinates[0] - 0.5
-			self.ycoordinates[1] = self.ycoordinates[1] + 0.5
-			self.xcoordinates[0] = self.xcoordinates[0] - 0.5
-			self.xcoordinates[1] = self.xcoordinates[1] + 0.5
-			return self
-		elif direction == "down": 
-			self.ycoordinates[0] = self.ycoordinates[0] + 0.5
-			self.ycoordinates[1] = self.ycoordinates[1] - 0.5
-			return self
-		elif direction == "horizontal": 
-			self.ycoordinates[0] = 3
-			self.ycoordinates[1] = 3
-			self.xcoordinates[0] = self.xcoordinates[0] + 0.5
-			self.xcoordinates[1] = self.xcoordinates[1] - 0.5
-			return self
-		elif direction == "vertical": 
-			self.xcoordinates[0] = 3
-			self.xcoordinates[1] = 3
-			self.ycoordinates[0] = self.ycoordinates[0] - 0.5
-			self.ycoordinates[1] = self.ycoordinates[1] + 0.5
-			return self
+	def _increase(self):			
+		self.shift = "increase"
+		self.text[2] = r'D'
+		return self
+
+	def increase(self):
+		self.transformations.append(self._increase)
+		return self
+
+	def _decrease(self):
+		self.shift = "decrease"
+		self.text[2] = r'D'
+		return self
+
+	def trace_point(self, x, y):
+		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
+		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
+		plt.text(x+.1, 0, r'Qd')
+		self.numMarks += 1
+		self.pointsToMark.append((x, y))
+		return self
+
+	def slope_up(self):
+		self.transformations.append(self._slope_up)
+		return self
+
+	def _slope_up(self):
+		self.ycoordinates[0] = self.ycoordinates[0] - self.slope_scale
+		self.ycoordinates[1] = self.ycoordinates[1] + self.slope_scale
+		self.xcoordinates[0] = self.xcoordinates[0] - self.slope_scale
+		self.xcoordinates[1] = self.xcoordinates[1] + self.slope_scale
+		self.slope_direction = "up"
+		return self
+
+	def slope_down(self):
+		self.transformations.append(self._slope_down)
+		return self
+
+	def _slope_down(self):
+		self.ycoordinates[0] = self.ycoordinates[0] + self.slope_scale
+		self.ycoordinates[1] = self.ycoordinates[1] - self.slope_scale
+		self.xcoordinates[0] = self.xcoordinates[0] + self.slope_scale
+		self.xcoordinates[1] = self.xcoordinates[1] - self.slope_scale
+		self.slope_direction = "down"
+		return self
+
+	def slope_horizontal(self):
+		self.transformations.append(self._slope_horizontal)
+		return self
+
+	def _slope_horizontal(self):
+		self.ycoordinates[0] = (max(self.axes[2], self.axes[3]) + min(self.axes[2], self.axes[3]))/2
+		self.ycoordinates[1] = (max(self.axes[2], self.axes[3]) + min(self.axes[2], self.axes[3]))/2
+		self.xcoordinates[0] = self.xcoordinates[0] + 0.5
+		self.xcoordinates[1] = self.xcoordinates[1] - 0.5
+		self.slope_direction = "horizontal"
+		return self
 	
-	def show(self): 
-		plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), linewidth=2)
+	def slope_vertical(self):
+		self.transformations.append(self._slope_vertical)
+		return self
+
+	def _slope_vertical(self):
+		self.xcoordinates[0] = (max(self.axes[0], self.axes[1]) + min(self.axes[0], self.axes[1]))/2
+		self.xcoordinates[1] = (max(self.axes[0], self.axes[1]) + min(self.axes[0], self.axes[1]))/2
+		self.ycoordinates[0] = 0
+		self.ycoordinates[1] = self.ycoordinates[1] + 0.5
+		self.slope_direction = "vertical"
+		return self
+	
+	def transform(self):
+		for transformation in self.transformations:
+			transformation()
+		self.show()
+		return self
+
+	def show(self):
 		plt.axis(self.axes)
-		plt.text(self.xcoordinates[1] + .1, self.ycoordinates[1] + .1, self.text[2])
+		shift_scale = (self.axes[3] + self.axes[2]) * 0.1
+		if self.markers:
+			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), marker='o', linestyle='-', linewidth=2)	
+			if self.shift == "increase":
+				plt.plot(np.array(list(map(lambda x: x-1, self.xcoordinates))), np.array(list(map(lambda y: y-1, self.ycoordinates))), marker='o', linestyle='-', linewidth=2)	
+			if self.shift == "decrease":
+				plt.plot(np.array(list(map(lambda x: x+1, self.xcoordinates))), np.array(list(map(lambda y: y+1, self.ycoordinates))), marker='o', linestyle='-', linewidth=2)				
+		else:
+			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), linewidth=2) 
+			if self.shift == "decrease":
+				plt.plot(np.array(list(map(lambda x: x-shift_scale, self.xcoordinates))), np.array(list(map(lambda y: y-shift_scale, self.ycoordinates))), linewidth=2)	
+			if self.shift == "increase":
+				plt.plot(np.array(list(map(lambda x: x+shift_scale, self.xcoordinates))), np.array(list(map(lambda y: y+shift_scale, self.ycoordinates))), linewidth=2)		
+		plt.text((max(self.xcoordinates)) + 0.2, (min(self.ycoordinates)) + 0.2, self.text[2])
+		if self.shift == "decrease":
+			plt.text((max(self.xcoordinates)) - shift_scale, (min(self.ycoordinates)) - shift_scale - (shift_scale * 0.2), r'D"')
+		if self.shift == "increase":
+			plt.text((max(self.xcoordinates)) + shift_scale, (min(self.ycoordinates)) + shift_scale + (shift_scale * 0.2), r'D"')
 
 # Supply Curve
-class SupplyCurve(): 
+class SupplyCurve():
 	
 	def __init__(self):
-		self.xcoordinates = [2, 5]
-		self.ycoordinates = [2, 5]
-		self.axes = [0, 7, 0, 7]
+		# Default axes scale
+		self.xstart = 0
+		self.xend = 10
+		self.ystart = 0 
+		self.yend = 10
+		self.axes = [0, 10, 0, 10]
+		self.scale = 2
+
+		# Coordinates for curve
+		self.xcoordinates = [self.xend - 2, self.xstart + 2]
+		self.ycoordinates = [self.yend - 2, self.ystart + 2]
+
+		# Text for curve
 		self.text = [5.1, 5, r'S']
+		# Attributes for transformations
+		self.markers = False
 
+		#Attribute for shift
+		self.shift = "none"
 
-	def increase(self):				
-		SupplyCurve().show()
-		self.xcoordinates =  list(map(lambda x: x+1, self.xcoordinates))
-		self.ycoordinates =  list(map(lambda y: y-1, self.ycoordinates))
-		self.text[2] = r'S"'
+		# Attributes for slope
+		self.slope_direction = "none"
+		self.slope_scale = 0
+
+		# Attributes for labelling lines
+		self.numMarks = 0
+		self.pointsToMark = list([])
+
+		# Attribute holding list of transformations
+		self.transformations = []
+
+	def translate(self, axes): 
+		# Set axes
+		self.xstart = axes[0]
+		self.xend = axes[1]
+		self.ystart = axes[2]
+		self.yend = axes[3]
+		self.axes = axes
+
+		# Set coordinates relative to axes
+		self.coords_scale = (self.xend - self.xstart) * 0.2
+		self.xcoordinates = [self.xstart + self.coords_scale, self.xend - self.coords_scale]
+		self.ycoordinates = [self.ystart + self.coords_scale, self.yend - self.coords_scale]
+
+		# Set slope scale 
+		self.slope_scale = (self.yend-self.ystart) * .10
+		self.transform()
 		return self
 
-	def decrease(self):
-		SupplyCurve().show()
-		self.xcoordinates =  list(map(lambda x: x-1, self.xcoordinates))
-		self.ycoordinates =  list(map(lambda y: y+1, self.ycoordinates))
-		self.text[2] = r'S"'
+	def decrease(self): 
+		self.transformations.append(self._decrease)
+		return self 
+
+	def _decrease(self):
+		self.shift = "decrease"
+		self.text[2] = r'S'
 		return self
 
-	def slope(self, direction):
-		if direction == "up":
-			self.ycoordinates[0] = self.ycoordinates[0] - 0.5
-			self.ycoordinates[1] = self.ycoordinates[1] + 0.5
-			return self
-		elif direction == "down": 
-			self.ycoordinates[0] = self.xcoordinates[0] + 0.5
-			self.ycoordinates[1] = self.xcoordinates[1] - 0.5
-			return self
-		elif direction == "horizontal": 
-			self.ycoordinates[0] = 3
-			self.ycoordinates[1] = 3
-			self.xcoordinates[0] = self.xcoordinates[0] - 1
-			self.xcoordinates[1] = self.xcoordinates[1] + 1
-			return self
-		elif direction == "vertical": 
-			self.xcoordinates[0] = 3
-			self.xcoordinates[1] = 3
-			self.ycoordinates[0] = self.ycoordinates[0] - 1
-			self.ycoordinates[1] = self.ycoordinates[1] + 1
-			return self
+	def increase(self): 
+		self.transformations.append(self._increase)
+		return self 
+
+	def _increase(self):
+		self.shift = "increase"
+		self.text[2] = r'S'
+		return self
 	
-	def label_line(self, x, y): 
-		plt.plot(np.array([-1,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.plot(np.array([x, x]), np.array([-1,y]), linewidth=1, linestyle='dashed', color='red')
+	def slope_up(self):
+		self.transformations.append(self._slope_up)
+		return self
+	
+	def _slope_up(self):
+		self.ycoordinates[0] = self.ycoordinates[0] - self.slope_scale
+		self.ycoordinates[1] = self.ycoordinates[1] + self.slope_scale
+		return self
+
+	def slope_down(self):
+		self.transformations.append(self._slope_down)
+		return self
+
+	def _slope_down(self):
+		self.ycoordinates[0] = self.xcoordinates[0] + self.slope_scale
+		self.ycoordinates[1] = self.xcoordinates[1] - self.slope_scale
+		return self
+
+	def slope_horizontal(self):
+		self.transformations.append(self._slope_horizontal)
+		return self
+
+	def _slope_horizontal(self): 
+		self.ycoordinates[0] = (max(self.axes[2], self.axes[3]) + min(self.axes[2], self.axes[3]))/2
+		self.ycoordinates[1] = (max(self.axes[2], self.axes[3]) + min(self.axes[2], self.axes[3]))/2
+		self.xcoordinates[0] = self.xcoordinates[0] - self.slope_scale
+		self.xcoordinates[1] = self.xcoordinates[1] + self.slope_scale
+		return self
+
+	def slope_vertical(self):
+		self.transformations.append(self._slope_vertical)
+		return self
+
+	def _slope_vertical(self):
+		self.xcoordinates[0] = (max(self.axes[0], self.axes[1]) + min(self.axes[0], self.axes[1]))/2
+		self.xcoordinates[1] = (max(self.axes[0], self.axes[1]) + min(self.axes[0], self.axes[1]))/2
+		self.ycoordinates[0] = 0
+		self.ycoordinates[1] = self.ycoordinates[1] + self.slope_scale
+		return self
+
+	def trace_point(self, x, y): 
+		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
+		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
+		plt.text(x+.1, 0, r'Qs')
+		self.numMarks += 1
+		self.pointsToMark.append((x, y))
+		return self
+	
+	def transform(self):
+		for transformation in self.transformations:
+			transformation()
+		self.show()
 		return self
 
 	def show(self): 
-		plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), linewidth=2)
 		plt.axis(self.axes)
-		plt.text(self.xcoordinates[1] + .1, self.ycoordinates[1], self.text[2])
+		shift_scale = (self.axes[3] + self.axes[2]) * 0.1				
+		if self.markers:
+			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), marker='o', linestyle='-', linewidth=2)	
+			if self.shift == "increase":
+				plt.plot(np.array(list(map(lambda x: x-1, self.xcoordinates))), np.array(list(map(lambda y: y+1, self.ycoordinates))), marker='o', linestyle='-', linewidth=2)	
+			if self.shift == "decrease":
+				plt.plot(np.array(list(map(lambda x: x+1, self.xcoordinates))), np.array(list(map(lambda y: y-1, self.ycoordinates))), marker='o', linestyle='-', linewidth=2)				
+		else:
+			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), linewidth=2) 
+			if self.shift == "decrease":
+				plt.plot(np.array(list(map(lambda x: x-shift_scale, self.xcoordinates))), np.array(list(map(lambda y: y+shift_scale, self.ycoordinates))), linewidth=2)	
+			if self.shift == "increase":
+				plt.plot(np.array(list(map(lambda x: x+shift_scale, self.xcoordinates))), np.array(list(map(lambda y: y-shift_scale, self.ycoordinates))), linewidth=2)	
+		plt.text((max(self.xcoordinates)) + .1, (max(self.ycoordinates)) + .1, self.text[2])
+		if self.shift == "decrease":
+			plt.text((max(self.xcoordinates)) - shift_scale, (max(self.ycoordinates)) + shift_scale + (shift_scale * 0.2), r'S"')
+		if self.shift == "increase":
+			plt.text((max(self.xcoordinates)) + shift_scale, (max(self.ycoordinates)) - shift_scale + (shift_scale * 0.2), r'S"')
 
-
-class PPF():
-	
+class PPC():
 	def __init__(self): 
 		cir1 = patches.Circle((0,0), radius=0.5, fc='none')
 		self.patches = [cir1]
-		
-	# def unattainable_point(self):
-	# 	# plt.plot(0.2, 0.2,
- #  #        marker='o',
- #  #        fillstyle='full',
- #  #        markeredgecolor='red',
- #  #        markeredgewidth=1)
- #  		pt = patches.Patch((0.2, 0.2), fill=True, facecolor='b')
- #  		self.patches.append(pt)
- #  		return self
+
+	def unattainable_point(self):
+		plt.plot(0.2, 0.1, 'o')
+		return self
 
 	def increase(self):
 		cir2 = patches.Circle((0,0), radius=0.75, fc='none')
@@ -159,6 +393,39 @@ class PPF():
 	def show(self): 
 		ax = plt.axes(aspect=1)
 		for patch in self.patches:
-			ax.add_patch(patch)	
-		ax.add_line()
+			ax.add_patch(patch)
+		ax.set_title("Production Possibilities Frontier")	
+		ax.set_xlabel("Capital Goods")
+		ax.set_ylabel("Consumer Goods")
 		plt.show()
+		
+class Schedule(): 
+	def __init__(self, coordinates_list): 
+		coordinates_dict = collections.OrderedDict(list(coordinates_list))
+		x_coords = list(coordinates_dict.keys())
+		y_coords = list(coordinates_dict.values())
+		self.xcoordinates = x_coords
+		self.ycoordinates = y_coords
+		self.axes = [0, (max(self.xcoordinates)) + 2, 0, (max(self.ycoordinates)) + 2]
+		self.markers = True
+		self.text = [5.1, 2, r'D']
+
+	def translate(self, axes): 
+		plt.axis(self.axes)
+		if self.markers:
+			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), marker='o', linewidth=2)
+		else:
+			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), linewidth=2)
+
+
+class MoneyMarket():
+	def __str__():
+		return "MoneyMarket"
+
+class LoanableFunds():
+	def __str__():
+		return "LoanableFunds"
+
+class Macro():
+	def __str__():
+		return "Macro"
