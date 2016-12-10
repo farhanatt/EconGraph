@@ -16,6 +16,7 @@ class Graph(object):
 		self.yend = 10
 		self.ylabel = "Price"
 		self.xlabel = "Quantity"
+		self.title = ""
 		self.curves = []
 
 	def setAxes(self, xstart, xend, ystart, yend):
@@ -24,17 +25,33 @@ class Graph(object):
 		self.ystart = ystart
 		self.yend = yend
 		self.axes = [xstart, xend, ystart, yend]
+	
+	def setTitle(self, title):
+		self.title = title
 
 	def setLabels(self, type):
 		if type.__str__() == "Macro":
 			self.ylabel = "Price Level"
 			self.ylabel = "Output"
+			self.ylabel = "Aggregate Supply and Demand"
 		if type.__str__() == "MoneyMarket":
 			self.ylabel = "Nominal Interest Rate"
 			self.xlabel = "Quantity of Money"
+			self.title = "Money Market"
 		if type.__str__() == "LoanableFunds":
 			self.ylabel = "Real Interest Rate"
 			self.xlabel = "Quantity of Loanable Funds"
+			self.title = "Loanable Funds Market"
+
+	def annotate_point(self, message, point_coords, text_coords):
+		plt.plot(point_coords[0], point_coords[1], marker='o')
+		plt.annotate(message, xy=point_coords, xytext=text_coords, 
+			arrowprops=dict(facecolor='black', shrink=0.05, width=0, headwidth=5))
+		return self
+
+	def mark_point(self, x, y): 
+		plt.plot(x, y, marker='o')
+		return self
 
 	def plot(self, *args):
 		for a in args:
@@ -48,8 +65,8 @@ class Graph(object):
 			c.translate(self.axes)
 		plt.ylabel(self.ylabel)
 		plt.xlabel(self.xlabel)
+		plt.title(self.title)
 
-# DemandCurve TODO: Change in quantity demanded
 class DemandCurve(object): 
 
 	def __init__(self):	
@@ -77,9 +94,9 @@ class DemandCurve(object):
 		self.slope_direction = "none"
 		self.slope_scale = 0
 
-		# Attributes for labelling lines
-		self.numLabels = 0
-		self.labels = list([])
+		# Attributes for marking points
+		self.numMarks = 0
+		self.pointsToMark = list([])
 
 		# Attribute holding list of transformations
 		self.transformations = []		
@@ -120,13 +137,13 @@ class DemandCurve(object):
 		self.shift = "decrease"
 		self.text[2] = r'D'
 		return self
-	
-	def label_line(self, x, y):
+
+	def trace_point(self, x, y):
 		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
 		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
 		plt.text(x+.1, 0, r'Qd')
-		self.numLabels += 1
-		self.labels.append((x, y))
+		self.numMarks += 1
+		self.pointsToMark.append((x, y))
 		return self
 
 	def slope_up(self):
@@ -233,8 +250,8 @@ class SupplyCurve():
 		self.slope_scale = 0
 
 		# Attributes for labelling lines
-		self.numLabels = 0
-		self.labels = list([])
+		self.numMarks = 0
+		self.pointsToMark = list([])
 
 		# Attribute holding list of transformations
 		self.transformations = []
@@ -314,13 +331,15 @@ class SupplyCurve():
 		self.ycoordinates[0] = 0
 		self.ycoordinates[1] = self.ycoordinates[1] + self.slope_scale
 		return self
-	
-	def label_line(self, x, y): 
+
+	def trace_point(self, x, y): 
 		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
 		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
 		plt.text(x+.1, 0, r'Qs')
+		self.numMarks += 1
+		self.pointsToMark.append((x, y))
 		return self
-
+	
 	def transform(self):
 		for transformation in self.transformations:
 			transformation()
@@ -348,13 +367,6 @@ class SupplyCurve():
 		if self.shift == "increase":
 			plt.text((max(self.xcoordinates)) + shift_scale, (max(self.ycoordinates)) - shift_scale + (shift_scale * 0.2), r'S"')
 
-#https://www.youtube.com/watch?v=2izx5W1FAEU&list=PLA46DB4506062B62B&index=1
-#PPC TODO: 
-	# - Constant PPC by default
-	# - Support "with favor consumer/capital goods"
-	# - Label axes by default to consumer/capital
-	# - "Capital investment" - Frontier shifts out but with same intersection on Y axis
-	# - Axis endpoints/axes scale
 class PPC():
 	def __init__(self): 
 		cir1 = patches.Circle((0,0), radius=0.5, fc='none')
@@ -381,13 +393,12 @@ class PPC():
 	def show(self): 
 		ax = plt.axes(aspect=1)
 		for patch in self.patches:
-			ax.add_patch(patch)	
+			ax.add_patch(patch)
+		ax.set_title("Production Possibilities Frontier")	
+		ax.set_xlabel("Capital Goods")
+		ax.set_ylabel("Consumer Goods")
 		plt.show()
-
-# class SurplusOrShortage():
-# 	def __init__(self, height):
-# 		plt.plot([0,1,2,3,4,5], [height, height, height, height, height,height], linestyle='--')
-
+		
 class Schedule(): 
 	def __init__(self, coordinates_list): 
 		coordinates_dict = collections.OrderedDict(list(coordinates_list))
@@ -399,7 +410,7 @@ class Schedule():
 		self.markers = True
 		self.text = [5.1, 2, r'D']
 
-	def show(self): 
+	def translate(self, axes): 
 		plt.axis(self.axes)
 		if self.markers:
 			plt.plot(np.array(self.xcoordinates), np.array(self.ycoordinates), marker='o', linewidth=2)
