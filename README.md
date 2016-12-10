@@ -1,6 +1,6 @@
 #EconGraph
 
-## How to use the DSL
+## Installation & Setup
 Make sure you've downloaded python3
 
 Install jupyter notebook following instructions from this link: https://jupyter.readthedocs.io/en/latest/install.html#installing-jupyter-using-anaconda-and-conda
@@ -26,9 +26,12 @@ Now you should be able to use any of the functions in the DSL.
 To verify that it works, copy and paste the following code and run the cell:
 
 ```
-DemandCurve().increase().show()
+g = Graph()
+g.plot(
+	DemandCurve().increase().show()
+	)
 ```
 
-You should see a graph with two demand curves appear.   
+You should see a graph showing an increase in demand (two demand curves).   
 
-
+## API 
