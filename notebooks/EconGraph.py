@@ -55,14 +55,14 @@ class Graph(object):
 			plt.annotate(message, xy=point_coords, xytext=text_coords, 
 			arrowprops=dict(facecolor='black', shrink=0.05, width=0, headwidth=5))
 		except ValueError:
-			print("ERROR: Wrong type of input! Please check your input types.")
+			print("ERROR: Wrong type of input! annotate_point takes in a message in quotes, and two x and y coordinates (Ex: annotate_point('hello', (1, 1), (1, 2)). and Please check your input types.")
 		return self
 
 	def mark_point(self, x, y): 
 		try:
 			plt.plot(x, y, marker='o')
 		except ValueError:
-			print("ERROR: Wrong type of input! Please check your input types.")
+			print("ERROR: Wrong type of input! mark_point takes in two numbers (Ex: mark_point(1, 2). Please check your input.")
 		return self
 
 	def plot(self, *args):
@@ -158,7 +158,7 @@ class DemandCurve(object):
 			self.numMarks += 1
 			self.pointsToMark.append((x, y))
 		except ValueError:
-			print("ERROR: Wrong type of input! Please check your input types.")
+			print("ERROR: Wrong type of input! trace_point takes in two numbers (Ex: trace_point(1, 2).  Please check your input types.")
 		return self
 
 	def slope_up(self):
