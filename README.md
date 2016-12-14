@@ -118,6 +118,14 @@ mark_point(1, 2)
 `slope_vertical()` will make the slope of the demand curve vertical.
 ### slope_horizontal()
 `slope_horizontal()` will make the slope of the demand curve horizontal.
+### inelastic()
+`inelastic()` will increase (make steeper) the slope of the demand curve.
+### elastic()
+`elastic()` will decrease (make flatter) the slope of the demand curve.
+### perfectly_inelastic()
+`perfectly_inelastic()` will make the slope of the demand curve vertical.
+### slope_horizontal()
+`perfectly_elastic()` will make the slope of the demand curve horizontal.
 ### trace_point(x, y)
 `trace_point` takes in two numbers representing the x and y coordinates of a point.  It will draw a dashed line from the point to the x- and y-axis.
 ### increase_price()
@@ -141,6 +149,14 @@ mark_point(1, 2)
 `slope_vertical()` will make the slope of the supply curve vertical.
 ### slope_horizontal()
 `slope_horizontal()` will make the slope of the supply curve horizontal.
+### inelastic()
+`inelastic()` will increase (make steeper) the slope of the supply curve.
+### elastic()
+`elastic()` will decrease (make flatter) the slope of the supply curve.
+### perfectly_inelastic()
+`perfectly_inelastic()` will make the slope of the supply curve vertical.
+### slope_horizontal()
+`perfectly_elastic()` will make the slope of the supply curve horizontal.
 ### trace_point(x, y)
 `trace_point` takes in two numbers representing the x and y coordinates of a point.  It will draw a dashed line from the point to the x- and y-axis.
 ### increase_price()
