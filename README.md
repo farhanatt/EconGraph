@@ -120,6 +120,10 @@ mark_point(1, 2)
 `slope_horizontal()` will make the slope of the demand curve horizontal.
 ### trace_point(x, y)
 `trace_point` takes in two numbers representing the x and y coordinates of a point.  It will draw a dashed line from the point to the x- and y-axis.
+### increase_price()
+`increase_price` will draw two sets of dashed lines intersecting the x- and y-axes showing the effect of an increase in price on quantity demanded.
+### decrease_price()
+`decrease_price` will draw two sets of dashed lines intersecting the x- and y-axes showing the effect of a decrease in price on quantity demanded.
 
 
 ## SupplyCurve()
@@ -139,6 +143,10 @@ mark_point(1, 2)
 `slope_horizontal()` will make the slope of the supply curve horizontal.
 ### trace_point(x, y)
 `trace_point` takes in two numbers representing the x and y coordinates of a point.  It will draw a dashed line from the point to the x- and y-axis.
+### increase_price()
+`increase_price` will draw two sets of dashed lines intersecting the x- and y-axes showing the effect of an increase in price on quantity supplied.
+### decrease_price()
+`decrease_price` will draw two sets of dashed lines intersecting the x- and y-axes showing the effect of a decrease in price on quantity supplied.
 
 ## Schedule()
 `Schedule()` takes in a list of coordinates and plots a line based on the points given.

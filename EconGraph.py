@@ -50,13 +50,19 @@ class Graph(object):
 			self.title = "Loanable Funds Market"
 
 	def annotate_point(self, message, point_coords, text_coords):
-		plt.plot(point_coords[0], point_coords[1], marker='o')
-		plt.annotate(message, xy=point_coords, xytext=text_coords, 
+		try:
+			plt.plot(point_coords[0], point_coords[1], marker='o')
+			plt.annotate(message, xy=point_coords, xytext=text_coords, 
 			arrowprops=dict(facecolor='black', shrink=0.05, width=0, headwidth=5))
+		except ValueError:
+			print("ERROR: Wrong type of input! annotate_point takes in a message in quotes, and two x and y coordinates (Ex: annotate_point('hello', (1, 1), (1, 2)). and Please check your input types.")
 		return self
 
 	def mark_point(self, x, y): 
-		plt.plot(x, y, marker='o')
+		try:
+			plt.plot(x, y, marker='o')
+		except ValueError:
+			print("ERROR: Wrong type of input! mark_point takes in two numbers (Ex: mark_point(1, 2). Please check your input.")
 		return self
 
 	def plot(self, *args):
@@ -145,11 +151,52 @@ class DemandCurve(object):
 		return self
 
 	def trace_point(self, x, y):
-		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.text(x+.1, 0, r'Qd')
-		self.numMarks += 1
-		self.pointsToMark.append((x, y))
+		try:
+			plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.text(x+.1, 0, r'Qd')
+			self.numMarks += 1
+			self.pointsToMark.append((x, y))
+		except ValueError:
+			print("ERROR: Wrong type of input! trace_point takes in two numbers (Ex: trace_point(1, 2).  Please check your input types.")
+		return self
+
+	def decrease_price(self):
+		self.transformations.append(self._decrease_price)
+		return self
+
+	def _decrease_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x + run
+		final_y = starting_y - (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		plt.arrow(starting_x + 0.05, starting_y/2, (0.75 * run), 0, head_width=0.1, head_length=0.1)
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (-0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
+		return self
+
+	def increase_price(self):
+		self.transformations.append(self._increase_price)
+		return self
+
+	def _increase_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x - run
+		final_y = starting_y + (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		# Arrow for change in quantity
+		plt.arrow(starting_x - 0.05, starting_y/2, (-0.75 * run), 0, head_width=0.1, head_length=0.1)
+		# Arrow for change in price
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
 		return self
 
 	def slope_up(self):
@@ -162,6 +209,10 @@ class DemandCurve(object):
 		self.xcoordinates[0] = self.xcoordinates[0] - self.slope_scale
 		self.xcoordinates[1] = self.xcoordinates[1] + self.slope_scale
 		self.slope_direction = "up"
+		self.ystart = self.ycoordinates[0] 
+		self.yend = self.ycoordinates[1] 
+		self.xend = self.xcoordinates[0]
+		self.xstart = self.xcoordinates[1]
 		return self
 
 	def slope_down(self):
@@ -174,6 +225,11 @@ class DemandCurve(object):
 		self.xcoordinates[0] = self.xcoordinates[0] + self.slope_scale
 		self.xcoordinates[1] = self.xcoordinates[1] - self.slope_scale
 		self.slope_direction = "down"
+		self.ystart = self.ycoordinates[0] 
+		self.yend = self.ycoordinates[1] 
+		self.xend = self.xcoordinates[0]
+		self.xstart = self.xcoordinates[1]
+		
 		return self
 
 	def slope_horizontal(self):
@@ -339,13 +395,55 @@ class SupplyCurve():
 		return self
 
 	def trace_point(self, x, y): 
-		plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
-		plt.text(x+.1, 0, r'Qs')
-		self.numMarks += 1
-		self.pointsToMark.append((x, y))
+		try:
+			plt.plot(np.array([0,x]), np.array([y,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.plot(np.array([x, x]), np.array([0,y]), linewidth=1, linestyle='dashed', color='red')
+			plt.text(x+.1, 0, r'Qs')
+			self.numMarks += 1
+			self.pointsToMark.append((x, y))
+		except ValueError:
+			print("ERROR: Wrong type of input! Please check your input types.")
 		return self
-	
+	def decrease_price(self):
+		self.transformations.append(self._decrease_price)
+		return self
+
+	def _decrease_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x - run
+		final_y = starting_y - (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		# Arrow for change in quantity
+		plt.arrow(starting_x + 0.05, starting_y/2, (-0.75 * run), 0, head_width=0.1, head_length=0.1)
+		# Arrow for change in price
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (-0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
+		return self
+
+	def increase_price(self):
+		self.transformations.append(self._increase_price)
+		return self
+
+	def _increase_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x + run
+		final_y = starting_y + (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		# Arrow for change in quantity
+		plt.arrow(starting_x + 0.05, starting_y/2, (0.75 * run), 0, head_width=0.1, head_length=0.1)
+		# Arrow for change in price
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
+		return self
+
 	def transform(self):
 		for transformation in self.transformations:
 			transformation()

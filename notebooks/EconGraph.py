@@ -161,6 +161,44 @@ class DemandCurve(object):
 			print("ERROR: Wrong type of input! trace_point takes in two numbers (Ex: trace_point(1, 2).  Please check your input types.")
 		return self
 
+	def decrease_price(self):
+		self.transformations.append(self._decrease_price)
+		return self
+
+	def _decrease_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x + run
+		final_y = starting_y - (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		plt.arrow(starting_x + 0.05, starting_y/2, (0.75 * run), 0, head_width=0.1, head_length=0.1)
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (-0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
+		return self
+
+	def increase_price(self):
+		self.transformations.append(self._increase_price)
+		return self
+
+	def _increase_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x - run
+		final_y = starting_y + (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		# Arrow for change in quantity
+		plt.arrow(starting_x - 0.05, starting_y/2, (-0.75 * run), 0, head_width=0.1, head_length=0.1)
+		# Arrow for change in price
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
+		return self
+
 	def slope_up(self):
 		self.transformations.append(self._slope_up)
 		return self
@@ -171,6 +209,10 @@ class DemandCurve(object):
 		self.xcoordinates[0] = self.xcoordinates[0] - self.slope_scale
 		self.xcoordinates[1] = self.xcoordinates[1] + self.slope_scale
 		self.slope_direction = "up"
+		self.ystart = self.ycoordinates[0] 
+		self.yend = self.ycoordinates[1] 
+		self.xend = self.xcoordinates[0]
+		self.xstart = self.xcoordinates[1]
 		return self
 
 	def slope_down(self):
@@ -183,6 +225,11 @@ class DemandCurve(object):
 		self.xcoordinates[0] = self.xcoordinates[0] + self.slope_scale
 		self.xcoordinates[1] = self.xcoordinates[1] - self.slope_scale
 		self.slope_direction = "down"
+		self.ystart = self.ycoordinates[0] 
+		self.yend = self.ycoordinates[1] 
+		self.xend = self.xcoordinates[0]
+		self.xstart = self.xcoordinates[1]
+		
 		return self
 
 	def slope_horizontal(self):
@@ -357,7 +404,46 @@ class SupplyCurve():
 		except ValueError:
 			print("ERROR: Wrong type of input! Please check your input types.")
 		return self
-	
+	def decrease_price(self):
+		self.transformations.append(self._decrease_price)
+		return self
+
+	def _decrease_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x - run
+		final_y = starting_y - (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		# Arrow for change in quantity
+		plt.arrow(starting_x + 0.05, starting_y/2, (-0.75 * run), 0, head_width=0.1, head_length=0.1)
+		# Arrow for change in price
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (-0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
+		return self
+
+	def increase_price(self):
+		self.transformations.append(self._increase_price)
+		return self
+
+	def _increase_price(self):
+		slope = (self.ystart - self.yend)/(self.xend - self.xstart)
+		rise = slope
+		run = 1
+		starting_x = (self.xend + self.xstart)/2
+		starting_y = (self.yend + self.ystart)/2
+		final_x = starting_x + run
+		final_y = starting_y + (-1 * rise)
+		self.trace_point(starting_x, starting_y)
+		self.trace_point(final_x, final_y)
+		# Arrow for change in quantity
+		plt.arrow(starting_x + 0.05, starting_y/2, (0.75 * run), 0, head_width=0.1, head_length=0.1)
+		# Arrow for change in price
+		plt.arrow(starting_x / 2, starting_y - 0.05, 0, (0.75 * (-1 * rise)), head_width=0.1, head_length=0.1)
+		return self
+
 	def transform(self):
 		for transformation in self.transformations:
 			transformation()
